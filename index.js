@@ -90,7 +90,7 @@ app.get('/sitemap.xml', (req, res) => {
 
 // ---- Serve React build (single-origin setup) ----
 // In production or when a build exists, serve the client build from the server
-const clientBuild = path.join(__dirname, '..', 'client', 'build');
+const clientBuild = path.join(__dirname, 'public');
 app.use(express.static(clientBuild, {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('index.html')) {
@@ -170,3 +170,4 @@ mongoose
     process.exit(1);
   });
 
+Fix: Correction du chemin vers les fichiers statiques
