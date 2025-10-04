@@ -170,4 +170,4 @@ mongoose
     process.exit(1);
   });
 
-Fix: Correction du chemin vers les fichiers statiques
+//Fix: Correction du chemin vers les fichiers statiques
