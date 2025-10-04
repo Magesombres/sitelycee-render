@@ -151,6 +151,24 @@ async function listenWithFallback(startPort) {
   });
 }
 
+// Configure MongoDB connection from environment with sensible defaults and good error messages
+let MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL;
+const MONGO_OPTIONS = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+};
+
+if (!MONGO_URI) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('FATAL: MONGO_URI is not set. Please configure the MONGO_URI environment variable on Render.');
+    process.exit(1);
+  }
+  // In development fallback to local MongoDB to allow running without env vars
+  console.warn('MONGO_URI not set, falling back to mongodb://localhost:27017/sitelyee for development.');
+  MONGO_URI = 'mongodb://localhost:27017/sitelyee';
+}
+
 mongoose.connect(MONGO_URI, MONGO_OPTIONS)
   .then(() => {
     console.log('MongoDB connecté');
