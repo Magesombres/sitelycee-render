@@ -102,10 +102,9 @@ app.use(express.static(clientBuild, {
 }));
 // Catch-all: let React Router handle unknown routes
 app.get('*', (req, res) => {
-  res.set('Cache-Control', 'no-store');
+  if (req.path.startsWith('/api')) return res.status(404).end();
   res.sendFile(path.join(clientBuild, 'index.html'));
 });
-
 // 404 + error handling
 app.use(notFound);
 app.use(errorHandler);
@@ -152,18 +151,10 @@ async function listenWithFallback(startPort) {
   });
 }
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log('Connecté à MongoDB');
-    const basePort = Number(process.env.PORT) || 5000;
-    try {
-      const actualPort = await listenWithFallback(basePort);
-      console.log(`Serveur démarré: http://localhost:${actualPort}`);
-    } catch (err) {
-      console.error('Erreur lors du démarrage du serveur:', err);
-      process.exit(1);
-    }
+mongoose.connect(MONGO_URI, MONGO_OPTIONS)
+  .then(() => {
+    console.log('MongoDB connecté');
+    app.listen(PORT, () => console.log(`Server started on ${PORT}`));
   })
   .catch((err) => {
     console.error('Erreur MongoDB:', err);
