@@ -91,10 +91,10 @@ app.get('/sitemap.xml', (req, res) => {
 // ---- Serve React build (single-origin setup) ----
 // In production or when a build exists, serve the client build from the server
 const clientBuild = path.join(__dirname, 'public');
-app.use(express.static(clientBuild, {
+app.use(express.static(clientBuild, { 
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('index.html')) {
-      res.setHeader('Cache-Control', 'no-store');
+      res.sendFile(path.join(clientBuild, 'index.html'));
     } else {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
