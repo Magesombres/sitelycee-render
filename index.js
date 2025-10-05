@@ -91,10 +91,10 @@ app.get('/sitemap.xml', (req, res) => {
 // ---- Serve React build (single-origin setup) ----
 // In production or when a build exists, serve the client build from the server
 const clientBuild = path.join(__dirname, 'public');
-app.use(express.static(clientBuild, { 
+app.use(express.static(clientBuild, {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('index.html')) {
-      res.sendFile(path.join(clientBuild, 'index.html'));
+      res.setHeader('Cache-Control', 'no-store');
     } else {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
@@ -102,9 +102,10 @@ app.use(express.static(clientBuild, {
 }));
 // Catch-all: let React Router handle unknown routes
 app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) return res.status(404).end();
+  res.set('Cache-Control', 'no-store');
   res.sendFile(path.join(clientBuild, 'index.html'));
 });
+
 // 404 + error handling
 app.use(notFound);
 app.use(errorHandler);
@@ -152,31 +153,31 @@ async function listenWithFallback(startPort) {
 }
 
 // Configure MongoDB connection from environment with sensible defaults and good error messages
-let MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL;
-const MONGO_OPTIONS = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-};
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/sitelyee';
+// const PORT = process.env.PORT || 10000;
+const START_PORT = Number(process.env.PORT) || 10000;
+console.log('DEBUG: process.env.PORT =', process.env.PORT, '; using start port =', START_PORT);
 
-if (!MONGO_URI) {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('FATAL: MONGO_URI is not set. Please configure the MONGO_URI environment variable on Render.');
-    process.exit(1);
-  }
-  // In development fallback to local MongoDB to allow running without env vars
-  console.warn('MONGO_URI not set, falling back to mongodb://localhost:27017/sitelyee for development.');
-  MONGO_URI = 'mongodb://localhost:27017/sitelyee';
+// Validate required env vars in production
+if (process.env.NODE_ENV === 'production' && !process.env.MONGO_URI) {
+  console.error('FATAL: MONGO_URI is not set. Please configure the MONGO_URI environment variable on Render.');
+  process.exit(1);
 }
 
-mongoose.connect(MONGO_URI, MONGO_OPTIONS)
-  .then(() => {
+mongoose
+  .connect(MONGO_URI)
+  .then(async () => {
     console.log('MongoDB connecté');
-    app.listen(PORT, () => console.log(`Server started on ${PORT}`));
+    try {
+      const actualPort = await listenWithFallback(START_PORT);
+      console.log(`Serveur démarré sur le port ${actualPort}`);
+    } catch (err) {
+      console.error('Erreur lors du démarrage du serveur:', err);
+      process.exit(1);
+    }
   })
   .catch((err) => {
     console.error('Erreur MongoDB:', err);
     process.exit(1);
   });
 
-//Fix: Correction du chemin vers les fichiers statiques
