@@ -88,10 +88,18 @@ app.get('/sitemap.xml', (req, res) => {
   res.type('application/xml').send(body);
 });
 
+// --- Compatibility redirect for old client bundle names (cached index.html) ---
+// Some older builds referenced main.28a49edc.js; redirect it to the current bundle
+app.get('/static/js/main.28a49edc.js', (req, res) => {
+  res.redirect(302, '/static/js/main.ac669778.js');
+});
+
 // ---- Serve React build (single-origin setup) ----
 // In production or when a build exists, serve the client build from the server
 const clientBuild = path.join(__dirname, 'public');
 app.use(express.static(clientBuild, {
+  // Return a proper 404 for missing static files to avoid MIME-type confusion
+  fallthrough: false,
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('index.html')) {
       res.setHeader('Cache-Control', 'no-store');
