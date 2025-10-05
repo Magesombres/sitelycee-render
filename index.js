@@ -17,21 +17,32 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 // Core middlewares
-// Allow dev CORS from localhost/LAN, with optional public tunnels (set CORS_ALLOW_ALL=1 for quick demo)
+// Allow same-origin (including Render domain) and dev origins; set CORS_ALLOW_ALL=1 to allow all
 const allowAll = String(process.env.CORS_ALLOW_ALL || '').toLowerCase() === '1';
-const corsOrigin = (origin, cb) => {
-  if (allowAll) return cb(null, true);
-  if (!origin) return cb(null, true); // same-origin or tools
-  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) return cb(null, true);
-  if (/^https?:\/\/192\.168\./.test(origin)) return cb(null, true);
-  if (/^https?:\/\/10\./.test(origin)) return cb(null, true);
-  if (/^https?:\/\/172\.(1[6-9]|2\d|3[0-1])\./.test(origin)) return cb(null, true);
-  // common tunnel domains
-  if (/^https?:\/\/.+\.ngrok(-free)?\.app$/i.test(origin)) return cb(null, true);
-  if (/^https?:\/\/.+\.trycloudflare\.com$/i.test(origin)) return cb(null, true);
-  return cb(new Error('CORS blocked'));
-};
-app.use(cors({ origin: corsOrigin, credentials: true }));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const host = req.get('host');
+  // Prefer forwarded proto on PaaS
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  const sameOrigin = !!origin && origin.replace(/\/$/, '') === `${proto}://${host}`;
+
+  const isLocal = !!origin && (
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\\d+)?$/i.test(origin) ||
+    /^https?:\/\/192\.168\./.test(origin) ||
+    /^https?:\/\/10\./.test(origin) ||
+    /^https?:\/\/172\.(1[6-9]|2\d|3[0-1])\./.test(origin)
+  );
+  const isTunnel = !!origin && (
+    /^https?:\/\/.+\.ngrok(-free)?\.app$/i.test(origin) ||
+    /^https?:\/\/.+\.trycloudflare\.com$/i.test(origin)
+  );
+
+  const shouldAllow = allowAll || !origin || sameOrigin || isLocal || isTunnel;
+  return cors({
+    origin: (_o, cb) => cb(null, shouldAllow),
+    credentials: true,
+  })(req, res, next);
+});
 app.use(express.json({ limit: '1mb' }));
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(compression());
@@ -122,7 +133,7 @@ app.use(errorHandler);
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-const io = new Server(server, { cors: { origin: corsOrigin } });
+const io = new Server(server, { cors: { origin: (origin, cb) => cb(null, true) } });
 // expose io on app for routes to use
 app.set('io', io);
 require('./realtime/tictactoe')(io);
