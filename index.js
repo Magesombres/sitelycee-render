@@ -92,6 +92,8 @@ app.get('/sitemap.xml', (req, res) => {
 // In production or when a build exists, serve the client build from the server
 const clientBuild = path.join(__dirname, 'public');
 app.use(express.static(clientBuild, {
+  // Return a proper 404 for missing static files to avoid MIME-type confusion
+  fallthrough: false,
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('index.html')) {
       res.setHeader('Cache-Control', 'no-store');
