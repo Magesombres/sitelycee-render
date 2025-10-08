@@ -48,3 +48,6 @@ build/
 
 # Fichiers temporaires de debug
 tmp_*
+
+# Scripts privés (accès restreint)
+scripts/list_users.js
