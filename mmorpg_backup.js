@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+﻿const jwt = require('jsonwebtoken');
 const Char    socket.on('move', asy    socket.on('move', async (data) => {
       try {
         const validated = moveSchema.parse(data);
@@ -13,7 +13,7 @@ const Char    socket.on('move', asy    socket.on('move', async (data) => {
         rec.x = nx; rec.y = ny;
         z.set(socket.id, rec);
 
-        // Émettre à toute la room (inclut l'émetteur -> le joueur voit son déplacement)
+        // ├ëmettre ├á toute la room (inclut l'├®metteur -> le joueur voit son d├®placement)
         nsp.to(currentZone).emit('player_move', { name: rec.name, x: nx, y: ny });
 
         try { 
@@ -21,7 +21,7 @@ const Char    socket.on('move', asy    socket.on('move', async (data) => {
         } catch {}
       } catch (e) {
         if (e instanceof z.ZodError) {
-          socket.emit('error_msg', 'Données invalides: ' + e.errors[0].message);
+          socket.emit('error_msg', 'Donn├®es invalides: ' + e.errors[0].message);
         }
       }
     });
@@ -38,7 +38,7 @@ const Char    socket.on('move', asy    socket.on('move', async (data) => {
         rec.x = nx; rec.y = ny;
         z.set(socket.id, rec);
 
-        // Émettre à toute la room (inclut l'émetteur -> le joueur voit son déplacement)
+        // ├ëmettre ├á toute la room (inclut l'├®metteur -> le joueur voit son d├®placement)
         nsp.to(currentZone).emit('player_move', { name: rec.name, x: nx, y: ny });
 
         try { 
@@ -46,13 +46,13 @@ const Char    socket.on('move', asy    socket.on('move', async (data) => {
         } catch {}
       } catch (e) {
         if (e instanceof z.ZodError) {
-          socket.emit('error_msg', 'Données invalides: ' + e.errors[0].message);
+          socket.emit('error_msg', 'Donn├®es invalides: ' + e.errors[0].message);
         }
       }
     });e('../models/Character');
 const { z } = require('zod');
 
-// Schémas de validation Zod
+// Sch├®mas de validation Zod
 const moveSchema = z.object({
   dx: z.number().int().min(-5).max(5).default(0),
   dy: z.number().int().min(-5).max(5).default(0),
@@ -104,7 +104,7 @@ module.exports = function attachMMO(io) {
       rec.x = nx; rec.y = ny;
       z.set(socket.id, rec);
 
-      // Émettre à toute la room (inclut l’émetteur -> le joueur voit son déplacement)
+      // ├ëmettre ├á toute la room (inclut lÔÇÖ├®metteur -> le joueur voit son d├®placement)
       nsp.to(currentZone).emit('player_move', { name: rec.name, x: nx, y: ny });
 
       try { await Character.updateOne({ user: user.id }, { $set: { x: nx, y: ny, lastSeen: new Date() } }); } catch {}
@@ -140,7 +140,7 @@ module.exports = function attachMMO(io) {
         } catch {}
       } catch (e) {
         if (e instanceof z.ZodError) {
-          socket.emit('error_msg', 'Données invalides: ' + e.errors[0].message);
+          socket.emit('error_msg', 'Donn├®es invalides: ' + e.errors[0].message);
         }
       }
     });
