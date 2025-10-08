@@ -48,12 +48,26 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
 router.post('/login', validate(loginSchema), async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    
+    // Recherche de l'utilisateur
     const user = await User.findOne({ username }).lean();
-    if (!user) return res.status(401).json({ error: 'Identifiants invalides' });
+    if (!user) {
+      return res.status(401).json({ 
+        error: 'Nom d\'utilisateur incorrect',
+        type: 'USERNAME_INVALID'
+      });
+    }
 
+    // Vérification du mot de passe
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(401).json({ error: 'Identifiants invalides' });
+    if (!ok) {
+      return res.status(401).json({ 
+        error: 'Mot de passe incorrect',
+        type: 'PASSWORD_INVALID'
+      });
+    }
 
+    // Génération du token
     const payload = {
       id: user._id.toString(),
       username: user.username,
@@ -63,7 +77,12 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: '7d' });
     return res.json({ token, user: payload });
   } catch (e) {
-    return next(e);
+    // Erreur serveur (base de données, etc.)
+    console.error('❌ Erreur lors de la connexion:', e);
+    return res.status(500).json({ 
+      error: 'Erreur serveur lors de la connexion. Veuillez réessayer.',
+      type: 'SERVER_ERROR'
+    });
   }
 });
 
