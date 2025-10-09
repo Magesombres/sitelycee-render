@@ -9,6 +9,8 @@ const router = express.Router();
 
 const { validatePassword } = require('../utils/validation');
 
+const DEBUG_AUTH = process.env.DEBUG_AUTH === '1';
+
 // Schemas
 const registerSchema = z.object({
   username: z.string().min(3).max(40).trim(),
@@ -46,12 +48,18 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
 
 // Connexion
 router.post('/login', validate(loginSchema), async (req, res, next) => {
+  const start = Date.now();
   try {
-    const { username, password } = req.body;
-    
+    let { username, password } = req.body;
+    // Normalisation
+    if (typeof username === 'string') username = username.trim();
+
+    if (DEBUG_AUTH) console.log(`[AUTH] Tentative login user='${username}'`);
+
     // Recherche de l'utilisateur
     const user = await User.findOne({ username }).lean();
     if (!user) {
+      if (DEBUG_AUTH) console.log(`[AUTH] Échec: utilisateur introuvable '${username}'`);
       return res.status(401).json({ 
         error: 'Nom d\'utilisateur incorrect',
         type: 'USERNAME_INVALID'
@@ -61,13 +69,13 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
     // Vérification du mot de passe
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) {
+      if (DEBUG_AUTH) console.log(`[AUTH] Échec: mot de passe invalide pour '${username}'`);
       return res.status(401).json({ 
         error: 'Mot de passe incorrect',
         type: 'PASSWORD_INVALID'
       });
     }
 
-    // Génération du token
     const payload = {
       id: user._id.toString(),
       username: user.username,
@@ -75,10 +83,12 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
       managerClubs: (user.managerClubs || []).map(String),
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: '7d' });
+
+    if (DEBUG_AUTH) console.log(`[AUTH] Succès login '${username}' en ${Date.now()-start}ms`);
     return res.json({ token, user: payload });
   } catch (e) {
-    // Erreur serveur (base de données, etc.)
     console.error('❌ Erreur lors de la connexion:', e);
+    if (DEBUG_AUTH) console.log(`[AUTH] Erreur serveur après ${Date.now()-start}ms:`, e.message);
     return res.status(500).json({ 
       error: 'Erreur serveur lors de la connexion. Veuillez réessayer.',
       type: 'SERVER_ERROR'
