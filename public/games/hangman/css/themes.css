@@ -1,0 +1,137 @@
+/* Themes CSS - Hangman Game */
+
+/* Dark Theme (default) */
+body[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-card: #0f3460;
+  --text-primary: #eaeaea;
+  --text-secondary: #a0a0a0;
+  --accent: #e94560;
+  --accent-hover: #ff6b85;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --border: #2a2a4e;
+}
+
+/* Light Theme */
+body[data-theme="light"] {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --accent: #e74c3c;
+  --accent-hover: #c0392b;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --border: #ecf0f1;
+}
+
+body[data-theme="light"] {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+}
+
+/* Chalkboard Theme */
+body[data-theme="chalkboard"] {
+  --bg-primary: #2d3e2d;
+  --bg-secondary: #3a4f3a;
+  --bg-card: #1e2d1e;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --accent: #ffeb3b;
+  --accent-hover: #fdd835;
+  --success: #8bc34a;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --border: #4a5f4a;
+}
+
+body[data-theme="chalkboard"] {
+  background: linear-gradient(135deg, #2d3e2d 0%, #1e2d1e 100%);
+  font-family: 'Courier New', monospace;
+}
+
+body[data-theme="chalkboard"] .letter {
+  font-family: 'Courier New', monospace;
+  border-style: dashed;
+}
+
+/* Neon Theme */
+body[data-theme="neon"] {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --bg-card: #0f0f0f;
+  --text-primary: #00ff00;
+  --text-secondary: #00aa00;
+  --accent: #ff00ff;
+  --accent-hover: #ff66ff;
+  --success: #00ff00;
+  --warning: #ffff00;
+  --danger: #ff0000;
+  --border: #00ff00;
+}
+
+body[data-theme="neon"] {
+  background: #0a0a0a;
+}
+
+body[data-theme="neon"] .letter {
+  box-shadow: 0 0 10px var(--border), inset 0 0 10px rgba(0, 255, 0, 0.2);
+  border-color: var(--success);
+}
+
+body[data-theme="neon"] .key {
+  box-shadow: 0 0 5px var(--accent);
+}
+
+body[data-theme="neon"] .mode-card:hover {
+  box-shadow: 0 0 30px var(--accent);
+}
+
+body[data-theme="neon"] h1, 
+body[data-theme="neon"] h2, 
+body[data-theme="neon"] h3 {
+  text-shadow: 0 0 10px var(--accent);
+}
+
+/* Display Mode: Modern */
+body[data-display="modern"] .hangman-classic {
+  display: none;
+}
+
+body[data-display="modern"] .hangman-section::before {
+  content: '';
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(90deg, 
+    var(--danger) 0%, 
+    var(--danger) calc(100% / 6 * var(--lives-remaining, 6)), 
+    var(--border) calc(100% / 6 * var(--lives-remaining, 6)), 
+    var(--border) 100%
+  );
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 2rem;
+}
+
+/* Display Mode: Minimal */
+body[data-display="minimal"] .hangman-section {
+  padding: 1rem;
+}
+
+body[data-display="minimal"] .mode-card {
+  padding: 1.5rem;
+}
+
+body[data-display="minimal"] .letter {
+  border-width: 1px;
+}
+
+/* Animations disabled */
+body[data-animations="false"] * {
+  animation: none !important;
+  transition: none !important;
+}
