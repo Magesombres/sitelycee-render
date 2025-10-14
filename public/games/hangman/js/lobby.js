@@ -7,29 +7,58 @@ const token = localStorage.getItem('token');
 let stats = null;
 let settings = null;
 
+// Check if user is logged in
+if (!token) {
+  alert('Vous devez être connecté pour jouer au Pendu');
+  window.location.href = '/';
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[Hangman Lobby] Initialisation...');
+  console.log('[Hangman Lobby] Token présent:', !!token);
+  
   loadStats();
   loadMiniLeaderboard();
   setupEventListeners();
   applySettings();
+  
+  console.log('[Hangman Lobby] Initialisation terminée');
 });
 
 // Setup Event Listeners
 function setupEventListeners() {
+  console.log('[Hangman Lobby] Setup event listeners...');
+  
   // Mode selection
-  document.querySelectorAll('.btn-play').forEach(btn => {
+  const playButtons = document.querySelectorAll('.btn-play');
+  console.log('[Hangman Lobby] Boutons de jeu trouvés:', playButtons.length);
+  
+  playButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const mode = e.target.dataset.mode;
+      console.log('[Hangman Lobby] Mode sélectionné:', mode);
       handleModeSelection(mode);
     });
   });
 
   // Navbar buttons
-  document.getElementById('btn-stats').addEventListener('click', showStatsModal);
-  document.getElementById('btn-leaderboard').addEventListener('click', showLeaderboardModal);
-  document.getElementById('btn-settings').addEventListener('click', showSettingsModal);
-  document.getElementById('btn-logout').addEventListener('click', () => {
+  const btnStats = document.getElementById('btn-stats');
+  const btnLeaderboard = document.getElementById('btn-leaderboard');
+  const btnSettings = document.getElementById('btn-settings');
+  const btnLogout = document.getElementById('btn-logout');
+  
+  console.log('[Hangman Lobby] Boutons navbar:', {
+    stats: !!btnStats,
+    leaderboard: !!btnLeaderboard,
+    settings: !!btnSettings,
+    logout: !!btnLogout
+  });
+  
+  if (btnStats) btnStats.addEventListener('click', showStatsModal);
+  if (btnLeaderboard) btnLeaderboard.addEventListener('click', showLeaderboardModal);
+  if (btnSettings) btnSettings.addEventListener('click', showSettingsModal);
+  if (btnLogout) btnLogout.addEventListener('click', () => {
     window.location.href = '/';
   });
 
@@ -212,8 +241,15 @@ function findDuelMatch() {
 
 // Show stats modal
 function showStatsModal() {
+  console.log('[Hangman Lobby] Afficher modal stats');
+  
   const modal = document.getElementById('modal-stats');
   const content = document.getElementById('stats-content');
+  
+  if (!modal) {
+    console.error('[Hangman Lobby] Modal stats non trouvée');
+    return;
+  }
   
   if (!stats) {
     content.innerHTML = '<div class="loading">Chargement...</div>';
@@ -272,7 +308,14 @@ function showStatsModal() {
 
 // Show leaderboard modal
 function showLeaderboardModal() {
+  console.log('[Hangman Lobby] Afficher modal leaderboard');
+  
   const modal = document.getElementById('modal-leaderboard');
+  if (!modal) {
+    console.error('[Hangman Lobby] Modal leaderboard non trouvée');
+    return;
+  }
+  
   modal.classList.remove('hidden');
   loadLeaderboard('duel');
 }
@@ -337,14 +380,20 @@ async function loadLeaderboard(mode) {
 
 // Show settings modal
 function showSettingsModal() {
+  console.log('[Hangman Lobby] Afficher modal settings');
+  
   const modal = document.getElementById('modal-settings');
+  if (!modal) {
+    console.error('[Hangman Lobby] Modal settings non trouvée');
+    return;
+  }
   
   if (settings) {
     document.getElementById('setting-theme').value = settings.theme;
     document.getElementById('setting-display').value = settings.displayMode;
     document.getElementById('setting-animations').checked = settings.animations;
     document.getElementById('setting-sound').checked = settings.soundEnabled;
-    document.getElementById('setting-music').checked = settings.musicEnabled;
+    document.getElementById('setting-music').checked = settings.musicEnabled || false;
     document.getElementById('setting-volume').value = Math.round(settings.volume * 100);
     document.getElementById('volume-value').textContent = Math.round(settings.volume * 100) + '%';
     document.getElementById('setting-show-used').checked = settings.showUsedLetters;
