@@ -1,7 +1,5 @@
 // Settings Manager for Hangman
 
-const API_BASE = window.location.origin;
-
 // Default settings
 const DEFAULT_SETTINGS = {
   theme: 'dark',
@@ -33,7 +31,7 @@ class SettingsManager {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/hangman/stats`, {
+      const response = await fetch(`${window.location.origin}/hangman/stats`, {
         headers: { 'Authorization': `Bearer ${this.token}` }
       });
 
@@ -64,7 +62,7 @@ class SettingsManager {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/hangman/stats/settings`, {
+      const response = await fetch(`${window.location.origin}/hangman/stats/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
