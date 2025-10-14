@@ -37,7 +37,7 @@ init().catch(console.error);
 
 async function init() {
   try {
-    const res = await fetch('/api/config');
+    const res = await fetch('/pixco/config');
     if (res.ok) CONFIG = await res.json();
   } catch {}
 
@@ -87,7 +87,7 @@ function buildPalette() {
 
 async function loadSnapshot() {
   try {
-    const res = await fetch('/api/snapshot');
+    const res = await fetch('/pixco/snapshot');
     if (!res.ok) return;
     const buf = await res.arrayBuffer();
     renderer.setRasterRGBA(buf);
@@ -215,7 +215,7 @@ async function fetchPixelMeta(x, y) {
   // déjà en cache
   if (metaCache.has(key)) return metaCache.get(key);
   try {
-    const res = await fetch(`/api/pixel?x=${x}&y=${y}`);
+    const res = await fetch(`/pixco/pixel?x=${x}&y=${y}`);
     if (!res.ok) return null;
     const p = await res.json();
     const m = { userId: p.userId ?? null, at: p.at ?? null };
@@ -247,9 +247,14 @@ function formatDuration(totalSeconds) {
 
 async function placeAtCell(g) {
   const color = currentColor;
-  const res = await fetch('/api/place', {
+  const token = localStorage.getItem('token');
+  
+  const res = await fetch('/pixco/place', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 
+      'content-type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
+    },
     body: JSON.stringify({ x: g.x, y: g.y, color })
   });
 
@@ -281,15 +286,22 @@ function flashInfo(msg) {
 }
 
 function connectWS() {
-  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  ws = new WebSocket(`${proto}//${location.host}/ws`);
-  ws.onmessage = (ev) => {
-    let msg; try { msg = JSON.parse(ev.data); } catch { return; }
-    if (msg.type === 'pixel') {
+  // Utiliser Socket.IO au lieu de WebSocket natif
+  const script = document.createElement('script');
+  script.src = '/socket.io/socket.io.js';
+  script.onload = () => {
+    // eslint-disable-next-line no-undef
+    const socket = io('/pixco');
+    
+    socket.on('pixel', (msg) => {
       // mettre à jour rendu + cache méta
-      renderer.setCell(msg.x, msg.y, msg.color, { userId: msg.userId ?? 'inconnu', color: msg.color, at: msg.at });
-      metaCache.set(`${msg.x},${msg.y}`, { userId: msg.userId ?? 'inconnu', at: msg.at });
-    }
+      renderer.setCell(msg.x, msg.y, msg.color, { userId: msg.username ?? 'inconnu', color: msg.color, at: msg.at });
+      metaCache.set(`${msg.x},${msg.y}`, { userId: msg.username ?? 'inconnu', at: msg.at });
+    });
+
+    socket.on('disconnect', () => {
+      console.log('[Pixco] Socket disconnected, reconnecting...');
+    });
   };
-  ws.onclose = () => setTimeout(connectWS, 1000);
+  document.head.appendChild(script);
 }
