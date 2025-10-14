@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman - Jeu</title>
+  <link rel="stylesheet" href="./css/game.css">
+  <link rel="stylesheet" href="./css/themes.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="game-header">
+      <div class="game-info">
+        <div class="info-item">
+          <span class="label">Mode:</span>
+          <span id="mode-display" class="value">Normal</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Vies:</span>
+          <span id="lives-display" class="value hearts">❤️❤️❤️❤️❤️❤️</span>
+        </div>
+        <div class="info-item hidden" id="timer-container">
+          <span class="label">Temps:</span>
+          <span id="timer-display" class="value">30s</span>
+        </div>
+        <div class="info-item hidden" id="score-container">
+          <span class="label">Score:</span>
+          <span id="score-display" class="value">0</span>
+        </div>
+        <div class="info-item hidden" id="streak-container">
+          <span class="label">Mots:</span>
+          <span id="streak-display" class="value">0</span>
+        </div>
+      </div>
+      <div class="game-actions">
+        <button id="btn-hint" class="btn-icon" title="Indice">💡</button>
+        <button id="btn-chat" class="btn-icon hidden" title="Chat">💬</button>
+        <button id="btn-quit" class="btn-icon" title="Quitter">🚪</button>
+      </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-container">
+      <!-- Hangman Drawing -->
+      <section class="hangman-section">
+        <div id="hangman-draw" class="hangman-classic">
+          <svg width="200" height="250" viewBox="0 0 200 250">
+            <!-- Gallows -->
+            <line x1="10" y1="230" x2="150" y2="230" stroke="#8B4513" stroke-width="4"/>
+            <line x1="50" y1="230" x2="50" y2="20" stroke="#8B4513" stroke-width="4"/>
+            <line x1="50" y1="20" x2="130" y2="20" stroke="#8B4513" stroke-width="4"/>
+            <line x1="130" y1="20" x2="130" y2="50" stroke="#8B4513" stroke-width="4"/>
+            
+            <!-- Head -->
+            <circle id="part-head" cx="130" cy="70" r="20" stroke="#000" stroke-width="3" fill="none" class="hidden"/>
+            <!-- Body -->
+            <line id="part-body" x1="130" y1="90" x2="130" y2="150" stroke="#000" stroke-width="3" class="hidden"/>
+            <!-- Left arm -->
+            <line id="part-left-arm" x1="130" y1="110" x2="100" y2="130" stroke="#000" stroke-width="3" class="hidden"/>
+            <!-- Right arm -->
+            <line id="part-right-arm" x1="130" y1="110" x2="160" y2="130" stroke="#000" stroke-width="3" class="hidden"/>
+            <!-- Left leg -->
+            <line id="part-left-leg" x1="130" y1="150" x2="110" y2="190" stroke="#000" stroke-width="3" class="hidden"/>
+            <!-- Right leg -->
+            <line id="part-right-leg" x1="130" y1="150" x2="150" y2="190" stroke="#000" stroke-width="3" class="hidden"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Word Display -->
+      <section class="word-section">
+        <div class="category-hint">
+          <span id="category-display" class="category">Catégorie: --</span>
+          <span id="hint-display" class="hint hidden">💡 --</span>
+        </div>
+        <div id="word-display" class="word-letters">
+          <span class="letter">_</span>
+        </div>
+        <div id="used-letters" class="used-letters hidden">
+          <div class="used-label">Lettres jouées:</div>
+          <div id="used-list" class="used-list"></div>
+        </div>
+      </section>
+
+      <!-- Keyboard -->
+      <section class="keyboard-section">
+        <div id="keyboard" class="keyboard">
+          <!-- Généré dynamiquement -->
+        </div>
+      </section>
+
+      <!-- Multiplayer Players List -->
+      <aside id="players-panel" class="players-panel hidden">
+        <h3>Joueurs</h3>
+        <div id="players-list" class="players-list">
+          <!-- Généré dynamiquement -->
+        </div>
+        <div id="turn-indicator" class="turn-indicator hidden">
+          Tour de: <strong id="current-turn">--</strong>
+        </div>
+      </aside>
+
+      <!-- Chat Panel -->
+      <aside id="chat-panel" class="chat-panel hidden">
+        <div class="chat-header">
+          <h3>💬 Chat</h3>
+          <button id="btn-close-chat" class="btn-close">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+          <!-- Messages -->
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chat-input" placeholder="Message..." maxlength="200">
+          <button id="btn-send-chat">Envoyer</button>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Game Over Modal -->
+    <div id="modal-game-over" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="game-over-title">🎉 Victoire!</h3>
+        </div>
+        <div class="modal-body">
+          <div id="game-over-content">
+            <div class="result-message" id="result-message">Félicitations!</div>
+            <div class="result-word">
+              Le mot était: <strong id="result-word">--</strong>
+            </div>
+            <div class="result-stats" id="result-stats">
+              <!-- Stats de la partie -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-play-again" class="btn-primary">Rejouer</button>
+          <button id="btn-back-lobby" class="btn-secondary">Lobby</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waiting for Players Modal -->
+    <div id="modal-waiting" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>En attente des joueurs...</h3>
+        </div>
+        <div class="modal-body">
+          <div class="room-info">
+            <p>Code de la room: <strong id="room-code-display">--</strong></p>
+            <p class="room-tip">Partagez ce code avec vos amis!</p>
+          </div>
+          <div id="waiting-players-list" class="waiting-players">
+            <!-- Liste des joueurs en attente -->
+          </div>
+          <button id="btn-ready" class="btn-primary">Prêt!</button>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-cancel-wait" class="btn-secondary">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./js/game.js" type="module"></script>
+</body>
+</html>

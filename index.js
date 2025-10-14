@@ -78,6 +78,7 @@ app.use('/admin', require('./routes/admin'));
 app.use('/mmorpg', require('./routes/mmorpg'));
 app.use('/chat', require('./routes/chat'));
 app.use('/pixco', require('./routes/pixco'));
+app.use('/hangman', require('./routes/hangman'));
 // Static approved uploads only
 app.use('/uploads/approved', express.static(path.join(__dirname, 'uploads', 'approved')));
 // Media API
@@ -139,6 +140,7 @@ require('./realtime/tictactoe')(io);
 require('./realtime/mmorpg')(io);
 require('./realtime/chat')(io);
 require('./realtime/pixco')(io);
+require('./realtime/hangman')(io);
 
 // Helper: listen with automatic fallback if the port is taken (unless PORT is explicitly set)
 async function listenWithFallback(startPort) {

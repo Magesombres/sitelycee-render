@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman - Lobby</title>
+  <link rel="stylesheet" href="./css/lobby.css">
+  <link rel="stylesheet" href="./css/themes.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-brand">
+        <h1>🎮 HANGMAN</h1>
+      </div>
+      <div class="nav-links">
+        <button id="btn-stats" class="nav-btn">📊 Mes Stats</button>
+        <button id="btn-leaderboard" class="nav-btn">🏆 Classement</button>
+        <button id="btn-settings" class="nav-btn">⚙️ Paramètres</button>
+        <button id="btn-logout" class="nav-btn">🚪 Retour</button>
+      </div>
+    </nav>
+
+    <!-- Main Lobby -->
+    <main class="lobby-container">
+      <!-- Mode Selection -->
+      <section class="modes-section">
+        <h2>Choisissez un mode de jeu</h2>
+        
+        <div class="modes-grid">
+          <!-- Mode Normal -->
+          <div class="mode-card" data-mode="normal">
+            <div class="mode-icon">🎯</div>
+            <h3>Normal</h3>
+            <p>Un mot aléatoire, 6 vies</p>
+            <button class="btn-play" data-mode="normal">Jouer</button>
+          </div>
+
+          <!-- Mode Chrono -->
+          <div class="mode-card" data-mode="chrono">
+            <div class="mode-icon">⏱️</div>
+            <h3>Chrono</h3>
+            <p>Mot court, 30 secondes</p>
+            <button class="btn-play" data-mode="chrono">Jouer</button>
+          </div>
+
+          <!-- Mode Survival -->
+          <div class="mode-card" data-mode="survival">
+            <div class="mode-icon">💪</div>
+            <h3>Survie</h3>
+            <p>Mots consécutifs, vies partagées</p>
+            <button class="btn-play" data-mode="survival">Jouer</button>
+          </div>
+
+          <!-- Mode Multiplayer -->
+          <div class="mode-card" data-mode="multiplayer">
+            <div class="mode-icon">👥</div>
+            <h3>Multiplayer</h3>
+            <p>Room privée, jusqu'à 4 joueurs</p>
+            <button class="btn-play" data-mode="multiplayer">Créer</button>
+          </div>
+
+          <!-- Mode Open Room -->
+          <div class="mode-card" data-mode="openRoom">
+            <div class="mode-icon">🌐</div>
+            <h3>Open Room</h3>
+            <p>Matchmaking rapide, fun</p>
+            <button class="btn-play" data-mode="openRoom">Rejoindre</button>
+          </div>
+
+          <!-- Mode Duel -->
+          <div class="mode-card" data-mode="duel">
+            <div class="mode-icon">⚔️</div>
+            <h3>Duel</h3>
+            <p>1v1 compétitif, classement ELO</p>
+            <button class="btn-play" data-mode="duel">Défier</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Stats -->
+      <section class="quick-stats">
+        <h2>Vos Statistiques</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Normal</div>
+            <div class="stat-value" id="stat-normal-record">0W - 0L</div>
+            <div class="stat-detail" id="stat-normal-winrate">0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Chrono</div>
+            <div class="stat-value" id="stat-chrono-best">--</div>
+            <div class="stat-detail">Meilleur temps</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Survie</div>
+            <div class="stat-value" id="stat-survival-streak">0</div>
+            <div class="stat-detail">Meilleur streak</div>
+          </div>
+          <div class="stat-card highlight">
+            <div class="stat-label">Duel ELO</div>
+            <div class="stat-value" id="stat-duel-elo">1200</div>
+            <div class="stat-detail" id="stat-duel-rank">#--</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mini Leaderboard -->
+      <section class="mini-leaderboard">
+        <h2>🏆 Top Joueurs (Duel)</h2>
+        <div class="leaderboard-list" id="mini-leaderboard">
+          <div class="loading">Chargement...</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Join Room -->
+    <div id="modal-join" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Rejoindre une Room</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <label for="input-room-code">Code de la Room</label>
+          <input type="text" id="input-room-code" placeholder="Ex: ABC123" maxlength="6">
+          <label for="input-username">Votre Pseudo</label>
+          <input type="text" id="input-username" placeholder="Pseudo" maxlength="20">
+        </div>
+        <div class="modal-footer">
+          <button id="btn-join-room" class="btn-primary">Rejoindre</button>
+          <button class="btn-secondary modal-close">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Stats -->
+    <div id="modal-stats" class="modal hidden">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>📊 Statistiques Détaillées</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body" id="stats-content">
+          <div class="loading">Chargement...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Leaderboard -->
+    <div id="modal-leaderboard" class="modal hidden">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>🏆 Classement</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="leaderboard-tabs">
+            <button class="tab-btn active" data-mode="duel">Duel (ELO)</button>
+            <button class="tab-btn" data-mode="survival">Survie (Streak)</button>
+            <button class="tab-btn" data-mode="chrono">Chrono (Temps)</button>
+            <button class="tab-btn" data-mode="normal">Normal (Victoires)</button>
+          </div>
+          <div id="leaderboard-content" class="leaderboard-content">
+            <div class="loading">Chargement...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Settings -->
+    <div id="modal-settings" class="modal hidden">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>⚙️ Paramètres</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="settings-section">
+            <h4>🎨 Apparence</h4>
+            <div class="setting-item">
+              <label>Thème</label>
+              <select id="setting-theme">
+                <option value="dark">Sombre</option>
+                <option value="light">Clair</option>
+                <option value="chalkboard">Tableau noir</option>
+                <option value="neon">Néon</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Mode d'affichage</label>
+              <select id="setting-display">
+                <option value="classic">Classique</option>
+                <option value="modern">Moderne</option>
+                <option value="minimal">Minimaliste</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Animations</label>
+              <input type="checkbox" id="setting-animations" checked>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h4>🔊 Audio</h4>
+            <div class="setting-item">
+              <label>Sons</label>
+              <input type="checkbox" id="setting-sound" checked>
+            </div>
+            <div class="setting-item">
+              <label>Musique</label>
+              <input type="checkbox" id="setting-music">
+            </div>
+            <div class="setting-item">
+              <label>Volume</label>
+              <input type="range" id="setting-volume" min="0" max="100" value="70">
+              <span id="volume-value">70%</span>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h4>🎮 Gameplay</h4>
+            <div class="setting-item">
+              <label>Afficher les lettres utilisées</label>
+              <input type="checkbox" id="setting-show-used" checked>
+            </div>
+            <div class="setting-item">
+              <label>Indice automatique après 3 erreurs</label>
+              <input type="checkbox" id="setting-auto-hint">
+            </div>
+            <div class="setting-item">
+              <label>Confirmer avant de quitter</label>
+              <input type="checkbox" id="setting-confirm-quit" checked>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-save-settings" class="btn-primary">Sauvegarder</button>
+          <button class="btn-secondary modal-close">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./js/lobby.js" type="module"></script>
+</body>
+</html>
