@@ -1,6 +1,6 @@
 const express = require('express');
 const Pixel = require('../models/Pixel');
-const { authenticate } = require('../middleware/authMiddleware');
+const { authMiddleware } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -83,7 +83,7 @@ router.get('/pixel', async (req, res) => {
 });
 
 // POST /pixco/place - Place un pixel (authentification requise)
-router.post('/place', authenticate, async (req, res) => {
+router.post('/place', authMiddleware, async (req, res) => {
   try {
     const { x, y, color } = req.body;
     const userId = req.user.id;
