@@ -172,7 +172,21 @@ async function listenWithFallback(startPort) {
 }
 
 // Configure MongoDB connection from environment with sensible defaults and good error messages
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/sitelyee';
+let MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/sitelyee';
+
+// Fix: Encode password in URI if it contains unescaped special characters
+try {
+  const url = new URL(MONGO_URI.replace('mongodb://', 'http://').replace('mongodb+srv://', 'https://'));
+  if (url.password && url.password !== encodeURIComponent(url.password)) {
+    const encodedPassword = encodeURIComponent(url.password);
+    MONGO_URI = MONGO_URI.replace(`:${url.password}@`, `:${encodedPassword}@`);
+    console.log('MongoDB password was auto-encoded');
+  }
+} catch (err) {
+  // If URL parsing fails, continue with original URI
+  console.warn('Could not parse MONGO_URI for password encoding, using as-is');
+}
+
 // const PORT = process.env.PORT || 10000;
 const START_PORT = Number(process.env.PORT) || 10000;
 console.log('DEBUG: process.env.PORT =', process.env.PORT, '; using start port =', START_PORT);
