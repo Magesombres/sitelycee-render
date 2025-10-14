@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const compression = require('compression');
 const pinoHttp = require('pino-http');
 const rateLimit = require('express-rate-limit');
-const morgan = require('morgan');
 require('dotenv').config();
 
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -109,8 +108,7 @@ app.get('/static/js/main.28a49edc.js', (req, res) => {
 // In production or when a build exists, serve the client build from the server
 const clientBuild = path.join(__dirname, 'public');
 app.use(express.static(clientBuild, {
-  // Return a proper 404 for missing static files to avoid MIME-type confusion
-  fallthrough: false,
+  // Allow fallthrough so React Router can handle unknown routes
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('index.html')) {
       res.setHeader('Cache-Control', 'no-store');
@@ -119,7 +117,7 @@ app.use(express.static(clientBuild, {
     }
   }
 }));
-// Catch-all: let React Router handle unknown routes
+// Catch-all: let React Router handle unknown routes (SPA fallback)
 app.get('*', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.sendFile(path.join(clientBuild, 'index.html'));
