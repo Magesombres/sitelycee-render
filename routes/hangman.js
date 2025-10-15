@@ -118,7 +118,13 @@ const startGameSchema = z.object({
   category: z.string().optional()
 });
 
-router.post('/game/start', authMiddleware, validate(startGameSchema), async (req, res, next) => {
+// Debug middleware to check req.user after authMiddleware
+const debugUser = (req, res, next) => {
+  console.log('[DEBUG AFTER AUTH] req.user:', req.user ? JSON.stringify(req.user) : 'UNDEFINED');
+  next();
+};
+
+router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema), async (req, res, next) => {
   console.log('[DEBUG ROUTE] POST /hangman/game/start appelée !');
   console.log('[DEBUG ROUTE] req.body:', JSON.stringify(req.body));
   console.log('[DEBUG ROUTE] req.user:', req.user ? req.user._id : 'NON AUTHENTIFIÉ');
