@@ -132,7 +132,8 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
   
   console.log('[DEBUG ROUTE] POST /hangman/game/start appelée !');
   console.log('[DEBUG ROUTE] req.body:', JSON.stringify(req.body));
-  console.log('[DEBUG ROUTE] req.user:', req.user ? req.user._id : 'NON AUTHENTIFIÉ');
+  console.log('[DEBUG ROUTE] userAtEntry (captured at line 129):', userAtEntry ? JSON.stringify(userAtEntry) : 'UNDEFINED');
+  console.log('[DEBUG ROUTE] req.user (accessing now):', req.user ? JSON.stringify(req.user) : 'UNDEFINED');
   try {
     const { mode, difficulty = 'moyen', category } = req.body;
     
@@ -168,8 +169,8 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
       roomCode,
       mode,
       players: [{
-        userId: req.user.id,
-        username: req.user.username,
+        userId: userAtEntry.id,  // FIX: Use captured value instead of req.user
+        username: userAtEntry.username,
         isReady: true,
         lives: mode === 'survival' ? 10 : 6
       }],
@@ -184,7 +185,7 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
       survivalLives: mode === 'survival' ? 10 : undefined,
       timeLimit: mode === 'chrono' ? 30 : undefined,
       startTime: new Date(),
-      createdBy: req.user.id
+      createdBy: userAtEntry.id  // FIX: Use captured value instead of req.user
     });
     
     res.json({
