@@ -1,4 +1,5 @@
 // Script pour peupler la base de données avec des mots français pour le jeu du pendu
+require('dotenv').config();
 const mongoose = require('mongoose');
 const HangmanWord = require('../models/HangmanWord');
 

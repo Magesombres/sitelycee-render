@@ -83,6 +83,7 @@ app.use('/clubs', require('./routes/club'));
 app.use('/events', require('./routes/event'));
 app.use('/user', require('./routes/user'));
 app.use('/admin', require('./routes/admin'));
+app.use('/admin/hangman', require('./routes/admin_hangman')); // Route temporaire pour seed
 app.use('/mmorpg', require('./routes/mmorpg'));
 app.use('/chat', require('./routes/chat'));
 app.use('/pixco', require('./routes/pixco'));

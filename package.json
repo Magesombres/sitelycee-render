@@ -9,6 +9,7 @@
     "build:client": "cd ../client && npm ci && npm run build",
     "build:all": "npm ci && npm run build:client",
     "seed": "node scripts/seed.js",
+    "seed:hangman": "node scripts/seed_hangman_words.js",
     "add-admin": "node scripts/add_admin.js",
     "test": "node tests/eventService.test.js"
   },
