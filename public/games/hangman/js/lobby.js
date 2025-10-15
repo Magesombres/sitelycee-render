@@ -69,6 +69,21 @@ function setupEventListeners() {
     });
   });
 
+  // Join room button (in modal)
+  const btnJoinRoom = document.getElementById('btn-join-room');
+  if (btnJoinRoom) {
+    btnJoinRoom.addEventListener('click', joinRoomWithCode);
+  }
+
+  // Join buttons (on mode cards)
+  const joinButtons = document.querySelectorAll('.btn-join');
+  joinButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering parent card
+      showJoinModal(false); // Show the modal to enter room code
+    });
+  });
+
   // Settings
   document.getElementById('btn-save-settings').addEventListener('click', saveSettings);
   document.getElementById('setting-volume').addEventListener('input', (e) => {
@@ -268,6 +283,36 @@ function joinOpenRoom() {
 
   // Redirect to game page - will list public rooms
   window.location.href = `./game.html?mode=openRoom`;
+}
+
+// Join room with code (from modal)
+function joinRoomWithCode() {
+  const roomCodeInput = document.getElementById('input-room-code');
+  const usernameInput = document.getElementById('input-username');
+  
+  const roomCode = roomCodeInput.value.trim().toUpperCase();
+  const username = usernameInput.value.trim() || getUsernameFromToken();
+  
+  if (!roomCode) {
+    alert('Veuillez entrer un code de salle');
+    return;
+  }
+  
+  if (!username) {
+    alert('Veuillez entrer un pseudo');
+    return;
+  }
+  
+  // Store data for game page
+  sessionStorage.setItem('hangmanMultiplayer', JSON.stringify({
+    isCreator: false,
+    mode: 'multiplayer',
+    username,
+    roomCode
+  }));
+  
+  // Redirect to game page with room code
+  window.location.href = `./game.html?mode=multiplayer&room=${roomCode}`;
 }
 
 // Find duel match

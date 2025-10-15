@@ -319,6 +319,7 @@ function handleMultiplayerConnection() {
   sessionStorage.removeItem('hangmanMultiplayer');
 
   const username = data.username || 'Joueur';
+  const joinRoomCode = data.roomCode || roomCode; // From session or URL
 
   if (mode === 'multiplayer' && urlParams.get('create') === 'true') {
     // Create a new multiplayer room
@@ -328,6 +329,9 @@ function handleMultiplayerConnection() {
       isPublic: false,
       maxPlayers: 4
     });
+  } else if (mode === 'multiplayer' && joinRoomCode) {
+    // Join existing multiplayer room with code
+    socket.emit('joinRoom', { roomCode: joinRoomCode, username });
   } else if (mode === 'openRoom') {
     // Join or create an open room
     socket.emit('createRoom', {
@@ -344,9 +348,8 @@ function handleMultiplayerConnection() {
       isPublic: true,
       maxPlayers: 2
     });
-  } else if (roomCode) {
-    // Join existing room
-    socket.emit('joinRoom', { roomCode, username });
+  } else {
+    showError('Configuration multijoueur invalide');
   }
 }
 

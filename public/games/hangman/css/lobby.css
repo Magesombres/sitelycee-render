@@ -153,7 +153,14 @@ body {
   font-size: 0.9rem;
 }
 
-.btn-play {
+.mode-buttons {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.btn-play,
+.btn-join {
   background: var(--accent);
   color: white;
   border: none;
@@ -163,11 +170,20 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 100%;
+  flex: 1;
+}
+
+.btn-join {
+  background: var(--success);
 }
 
 .btn-play:hover {
   background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.btn-join:hover {
+  background: #27ae60;
   transform: scale(1.05);
 }
 
