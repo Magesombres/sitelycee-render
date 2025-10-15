@@ -81,6 +81,11 @@ app.use('/pixco', require('./routes/pixco'));
 console.log('[DEBUG] Chargement routes Hangman...');
 const hangmanRouter = require('./routes/hangman');
 console.log(`[DEBUG] Routes Hangman chargées: ${hangmanRouter.stack ? hangmanRouter.stack.length : 'ERREUR'} routes`);
+hangmanRouter.stack.forEach((r, i) => {
+  const method = r.route.stack[0].method.toUpperCase();
+  const path = r.route.path;
+  console.log(`[DEBUG]   ${i+1}. ${method} /hangman${path}`);
+});
 app.use('/hangman', hangmanRouter);
 // Static approved uploads only
 app.use('/uploads/approved', express.static(path.join(__dirname, 'uploads', 'approved')));
