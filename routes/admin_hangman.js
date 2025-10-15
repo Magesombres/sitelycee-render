@@ -11,7 +11,7 @@ router.post('/seed-hangman-words', authMiddleware, isAdmin, async (req, res) => 
     // Supprimerles anciens mots
     await HangmanWord.deleteMany({});
     
-    const words = [
+    const wordsData = [
       // ANIMAUX
       { word: 'CHAT', category: 'animaux', difficulty: 'facile', hint: 'Félin domestique' },
       { word: 'CHIEN', category: 'animaux', difficulty: 'facile', hint: 'Meilleur ami de l\'homme' },
@@ -92,6 +92,12 @@ router.post('/seed-hangman-words', authMiddleware, isAdmin, async (req, res) => 
       { word: 'VIOLET', category: 'couleurs', difficulty: 'moyen', hint: 'Mélange de bleu et rouge' },
       { word: 'ROSE', category: 'couleurs', difficulty: 'facile', hint: 'Rouge clair' },
     ];
+    
+    // Ajouter automatiquement le champ length à chaque mot
+    const words = wordsData.map(wordData => ({
+      ...wordData,
+      length: wordData.word.length
+    }));
     
     await HangmanWord.insertMany(words);
     
