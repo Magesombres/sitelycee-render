@@ -66,31 +66,30 @@ router.post('/seed-hangman-words', authMiddleware, isAdmin, async (req, res) => 
       { word: 'VOLLEYBALL', category: 'sports', difficulty: 'moyen', hint: 'Sport avec un filet' },
       { word: 'ATHLETISME', category: 'sports', difficulty: 'difficile', hint: 'Course, saut, lancer' },
       
-      // FRUITS
-      { word: 'POMME', category: 'fruits', difficulty: 'facile', hint: 'Fruit rouge ou vert' },
-      { word: 'BANANE', category: 'fruits', difficulty: 'facile', hint: 'Fruit jaune allongé' },
-      { word: 'ORANGE', category: 'fruits', difficulty: 'facile', hint: 'Agrume orange' },
-      { word: 'FRAISE', category: 'fruits', difficulty: 'facile', hint: 'Petit fruit rouge' },
-      { word: 'ANANAS', category: 'fruits', difficulty: 'moyen', hint: 'Fruit tropical épineux' },
-      { word: 'PASTEQUE', category: 'fruits', difficulty: 'moyen', hint: 'Gros fruit d\'été' },
-      { word: 'KIWI', category: 'fruits', difficulty: 'facile', hint: 'Fruit vert poilu' },
+      // FRUITS (catégorie: nourriture)
+      { word: 'POMME', category: 'nourriture', difficulty: 'facile', hint: 'Fruit rouge ou vert' },
+      { word: 'BANANE', category: 'nourriture', difficulty: 'facile', hint: 'Fruit jaune allongé' },
+      { word: 'FRAISE', category: 'nourriture', difficulty: 'facile', hint: 'Petit fruit rouge' },
+      { word: 'ANANAS', category: 'nourriture', difficulty: 'moyen', hint: 'Fruit tropical épineux' },
+      { word: 'PASTEQUE', category: 'nourriture', difficulty: 'moyen', hint: 'Gros fruit d\'été' },
+      { word: 'KIWI', category: 'nourriture', difficulty: 'facile', hint: 'Fruit vert poilu' },
       
-      // LÉGUMES
-      { word: 'CAROTTE', category: 'legumes', difficulty: 'facile', hint: 'Légume orange' },
-      { word: 'TOMATE', category: 'legumes', difficulty: 'facile', hint: 'Fruit-légume rouge' },
-      { word: 'SALADE', category: 'legumes', difficulty: 'facile', hint: 'Feuilles vertes' },
-      { word: 'COURGETTE', category: 'legumes', difficulty: 'moyen', hint: 'Légume vert allongé' },
-      { word: 'AUBERGINE', category: 'legumes', difficulty: 'moyen', hint: 'Légume violet' },
-      { word: 'POIVRON', category: 'legumes', difficulty: 'moyen', hint: 'Légume de différentes couleurs' },
+      // LÉGUMES (catégorie: nourriture)
+      { word: 'CAROTTE', category: 'nourriture', difficulty: 'facile', hint: 'Légume orange' },
+      { word: 'TOMATE', category: 'nourriture', difficulty: 'facile', hint: 'Fruit-légume rouge' },
+      { word: 'SALADE', category: 'nourriture', difficulty: 'facile', hint: 'Feuilles vertes' },
+      { word: 'COURGETTE', category: 'nourriture', difficulty: 'moyen', hint: 'Légume vert allongé' },
+      { word: 'AUBERGINE', category: 'nourriture', difficulty: 'moyen', hint: 'Légume violet' },
+      { word: 'POIVRON', category: 'nourriture', difficulty: 'moyen', hint: 'Légume de différentes couleurs' },
       
-      // COULEURS
-      { word: 'ROUGE', category: 'couleurs', difficulty: 'facile', hint: 'Couleur du sang' },
-      { word: 'BLEU', category: 'couleurs', difficulty: 'facile', hint: 'Couleur du ciel' },
-      { word: 'VERT', category: 'couleurs', difficulty: 'facile', hint: 'Couleur de l\'herbe' },
-      { word: 'JAUNE', category: 'couleurs', difficulty: 'facile', hint: 'Couleur du soleil' },
-      { word: 'ORANGE', category: 'couleurs', difficulty: 'facile', hint: 'Entre rouge et jaune' },
-      { word: 'VIOLET', category: 'couleurs', difficulty: 'moyen', hint: 'Mélange de bleu et rouge' },
-      { word: 'ROSE', category: 'couleurs', difficulty: 'facile', hint: 'Rouge clair' },
+      // COULEURS (catégorie: general)
+      { word: 'ROUGE', category: 'general', difficulty: 'facile', hint: 'Couleur du sang' },
+      { word: 'BLEU', category: 'general', difficulty: 'facile', hint: 'Couleur du ciel' },
+      { word: 'VERT', category: 'general', difficulty: 'facile', hint: 'Couleur de l\'herbe' },
+      { word: 'JAUNE', category: 'general', difficulty: 'facile', hint: 'Couleur du soleil' },
+      { word: 'VIOLET', category: 'general', difficulty: 'moyen', hint: 'Mélange de bleu et rouge' },
+      { word: 'ROSE', category: 'general', difficulty: 'facile', hint: 'Rouge clair' },
+      { word: 'NOIR', category: 'general', difficulty: 'facile', hint: 'Couleur de la nuit' },
     ];
     
     // Ajouter automatiquement le champ length à chaque mot
