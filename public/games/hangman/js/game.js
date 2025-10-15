@@ -31,7 +31,24 @@ let timerInterval = null;
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-  if (!token || !roomCode) {
+  // Token is always required
+  if (!token) {
+    alert('Paramètres invalides');
+    window.location.href = './index.html';
+    return;
+  }
+
+  // Mode validation
+  const validModes = ['normal', 'chrono', 'survival', 'multiplayer', 'openRoom', 'duel'];
+  if (!mode || !validModes.includes(mode)) {
+    alert('Mode de jeu invalide');
+    window.location.href = './index.html';
+    return;
+  }
+
+  // RoomCode is only required for solo modes
+  const multiplayerModes = ['multiplayer', 'openRoom', 'duel'];
+  if (!multiplayerModes.includes(mode) && !roomCode) {
     alert('Paramètres invalides');
     window.location.href = './index.html';
     return;
