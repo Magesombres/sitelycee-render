@@ -135,7 +135,9 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
   console.log('[DEBUG ROUTE] userAtEntry (captured at line 129):', userAtEntry ? JSON.stringify(userAtEntry) : 'UNDEFINED');
   console.log('[DEBUG ROUTE] req.user (accessing now):', req.user ? JSON.stringify(req.user) : 'UNDEFINED');
   try {
+    console.log('[DEBUG ROUTE] Entering try block...');
     const { mode, difficulty = 'moyen', category } = req.body;
+    console.log('[DEBUG ROUTE] Destructured body:', { mode, difficulty, category });
     
     // Générer un code de room unique
     const genCode = () => {
