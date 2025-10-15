@@ -78,7 +78,10 @@ app.use('/admin', require('./routes/admin'));
 app.use('/mmorpg', require('./routes/mmorpg'));
 app.use('/chat', require('./routes/chat'));
 app.use('/pixco', require('./routes/pixco'));
-app.use('/hangman', require('./routes/hangman'));
+console.log('[DEBUG] Chargement routes Hangman...');
+const hangmanRouter = require('./routes/hangman');
+console.log(`[DEBUG] Routes Hangman chargées: ${hangmanRouter.stack ? hangmanRouter.stack.length : 'ERREUR'} routes`);
+app.use('/hangman', hangmanRouter);
 // Static approved uploads only
 app.use('/uploads/approved', express.static(path.join(__dirname, 'uploads', 'approved')));
 // Media API
