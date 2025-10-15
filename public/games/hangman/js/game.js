@@ -5,7 +5,7 @@ const token = localStorage.getItem('token');
 
 // Get URL params
 const urlParams = new URLSearchParams(window.location.search);
-const roomCode = urlParams.get('room');
+let roomCode = urlParams.get('room'); // Use let instead of const to allow updates
 const mode = urlParams.get('mode');
 
 // State
@@ -161,9 +161,9 @@ function connectSocket() {
 
   socket.on('roomCreated', (data) => {
     console.log('[Hangman] Room créée:', data);
-    const newRoomCode = data.roomCode;
+    roomCode = data.roomCode; // Update global roomCode variable
     // Update URL without reload
-    const newUrl = `${window.location.pathname}?room=${newRoomCode}&mode=${mode}`;
+    const newUrl = `${window.location.pathname}?room=${roomCode}&mode=${mode}`;
     window.history.replaceState({}, '', newUrl);
     
     showWaitingRoom(data.game);
@@ -171,6 +171,7 @@ function connectSocket() {
 
   socket.on('roomJoined', (data) => {
     console.log('[Hangman] Room rejointe:', data);
+    roomCode = data.game.roomCode; // Update global roomCode variable
     showWaitingRoom(data.game);
   });
 
@@ -210,6 +211,13 @@ function connectSocket() {
     gameState.startTime = Date.now();
     gameState.players = data.players;
     gameState.currentTurn = data.currentTurn;
+    
+    // Show turn display for multiplayer
+    const multiplayerModes = ['multiplayer', 'openRoom', 'duel'];
+    if (multiplayerModes.includes(mode)) {
+      document.getElementById('turn-container').classList.remove('hidden');
+      document.getElementById('btn-chat').classList.remove('hidden');
+    }
     
     updateUI();
     
@@ -410,6 +418,8 @@ function updatePlayerList(players) {
 
 // Guess letter
 async function guessLetter(letter) {
+  console.log('[Hangman] guessLetter called:', letter, 'mode:', mode, 'roomCode:', roomCode);
+  
   if (gameState.gameOver) return;
   if (gameState.guessedLetters.includes(letter) || gameState.wrongGuesses.includes(letter)) {
     return; // Déjà jouée
@@ -502,6 +512,14 @@ function updateUI() {
   
   // Category
   document.getElementById('category-display').textContent = `Catégorie: ${gameState.category || '--'}`;
+  
+  // Turn (multiplayer)
+  if (gameState.currentTurn) {
+    const turnDisplay = document.getElementById('turn-display');
+    if (turnDisplay) {
+      turnDisplay.textContent = gameState.currentTurn;
+    }
+  }
   
   // Hangman drawing
   updateHangman();
