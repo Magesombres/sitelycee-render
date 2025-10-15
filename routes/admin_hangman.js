@@ -3,18 +3,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const HangmanWord = require('../models/HangmanWord');
-const authMiddleware = require('../middleware/authMiddleware');
-
-// Middleware pour vérifier que l'utilisateur est admin
-const requireAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin requis' });
-  }
-  next();
-};
+const { authMiddleware, isAdmin } = require('../middleware/authMiddleware');
 
 // Route pour seed (TEMPORAIRE - supprimer après utilisation !)
-router.post('/seed-hangman-words', authMiddleware, requireAdmin, async (req, res) => {
+router.post('/seed-hangman-words', authMiddleware, isAdmin, async (req, res) => {
   try {
     // Supprimerles anciens mots
     await HangmanWord.deleteMany({});
