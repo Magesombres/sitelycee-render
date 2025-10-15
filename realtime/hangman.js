@@ -348,6 +348,7 @@ module.exports = function attachHangman(io) {
         lives: game.livesRemaining,
         survivalLives: game.survivalLives,
         currentTurn: game.players[0]?.username,
+        players: game.players,
         timeLimit: game.mode === 'chrono' ? 30 : undefined
       });
 

@@ -54,6 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // For multiplayer modes, hide game container initially
+  if (multiplayerModes.includes(mode)) {
+    document.getElementById('game-container').classList.add('hidden');
+  }
+
   loadSettings();
   setupEventListeners();
   createKeyboard();
@@ -97,6 +102,14 @@ function setupEventListeners() {
   document.getElementById('btn-back-lobby').addEventListener('click', () => {
     window.location.href = './index.html';
   });
+  
+  // Waiting room leave button
+  const btnLeaveRoom = document.getElementById('btn-leave-room');
+  if (btnLeaveRoom) {
+    btnLeaveRoom.addEventListener('click', () => {
+      window.location.href = './index.html';
+    });
+  }
   
   // Chat
   document.getElementById('btn-close-chat').addEventListener('click', toggleChat);
@@ -183,6 +196,11 @@ function connectSocket() {
 
   socket.on('gameStarted', (data) => {
     console.log('[Hangman] Partie démarrée', data);
+    
+    // Hide waiting room, show game
+    document.getElementById('waiting-room').classList.add('hidden');
+    document.getElementById('game-container').classList.remove('hidden');
+    
     gameState.word = '_'.repeat(data.wordLength);
     gameState.revealedWord = data.revealedWord;
     gameState.category = data.category;
@@ -190,12 +208,16 @@ function connectSocket() {
     gameState.livesRemaining = data.lives;
     gameState.timeLimit = data.timeLimit;
     gameState.startTime = Date.now();
+    gameState.players = data.players;
+    gameState.currentTurn = data.currentTurn;
     
     updateUI();
     
     if (data.timeLimit) {
       startTimer(data.timeLimit);
     }
+    
+    showMessage('La partie commence ! 🎮');
   });
 
   socket.on('letterGuessed', (data) => {
