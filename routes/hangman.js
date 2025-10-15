@@ -161,6 +161,7 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
     const count = await HangmanWord.countDocuments(query);
     console.log('[DEBUG ROUTE] Words found:', count);
     if (count === 0) {
+      console.log('[DEBUG ROUTE] No words found, returning 404 with message');
       return res.status(404).json({ error: 'Aucun mot trouvé pour ces critères' });
     }
     
