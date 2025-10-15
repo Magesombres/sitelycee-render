@@ -220,26 +220,85 @@ async function startSoloGame(mode) {
 
 // Show join modal
 function showJoinModal(isCreate = false) {
-  const modal = document.getElementById('modal-join');
-  modal.classList.remove('hidden');
-
   if (isCreate) {
-    // TODO: Create multiplayer room via Socket.IO
-    // For now, redirect to game page
-    alert('Création de room multiplayer - À implémenter');
+    // Create multiplayer room via Socket.IO
+    createMultiplayerRoom();
+  } else {
+    // Show join room modal
+    const modal = document.getElementById('modal-join');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
   }
+}
+
+// Create multiplayer room
+function createMultiplayerRoom() {
+  const username = getUsernameFromToken();
+  if (!username) {
+    alert('Erreur d\'authentification');
+    return;
+  }
+
+  // Store mode and username for game page
+  sessionStorage.setItem('hangmanMultiplayer', JSON.stringify({
+    isCreator: true,
+    mode: 'multiplayer',
+    username
+  }));
+
+  // Redirect to game page without roomCode (will be created by Socket.IO)
+  window.location.href = `./game.html?mode=multiplayer&create=true`;
 }
 
 // Join open room
 function joinOpenRoom() {
-  // TODO: Implement open room matchmaking
-  alert('Open Room - À implémenter');
+  const username = getUsernameFromToken();
+  if (!username) {
+    alert('Erreur d\'authentification');
+    return;
+  }
+
+  // Store mode and username for game page
+  sessionStorage.setItem('hangmanMultiplayer', JSON.stringify({
+    isCreator: false,
+    mode: 'openRoom',
+    username
+  }));
+
+  // Redirect to game page - will list public rooms
+  window.location.href = `./game.html?mode=openRoom`;
 }
 
 // Find duel match
 function findDuelMatch() {
-  // TODO: Implement duel matchmaking
-  alert('Duel matchmaking - À implémenter');
+  const username = getUsernameFromToken();
+  if (!username) {
+    alert('Erreur d\'authentification');
+    return;
+  }
+
+  // Store mode and username for game page
+  sessionStorage.setItem('hangmanMultiplayer', JSON.stringify({
+    isCreator: false,
+    mode: 'duel',
+    username
+  }));
+
+  // Redirect to game page - will find/create duel match
+  window.location.href = `./game.html?mode=duel`;
+}
+
+// Helper: Get username from token
+function getUsernameFromToken() {
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.username || 'Joueur';
+  } catch {
+    return 'Joueur';
+  }
 }
 
 // Show stats modal

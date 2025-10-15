@@ -122,7 +122,46 @@ function connectSocket() {
     // Si solo game, on a déjà le room code de l'API
     if (['normal', 'chrono', 'survival'].includes(mode)) {
       loadGameState();
+    } 
+    // Si multiplayer, gérer selon le contexte
+    else {
+      handleMultiplayerConnection();
     }
+  });
+
+  socket.on('roomCreated', (data) => {
+    console.log('[Hangman] Room créée:', data);
+    const newRoomCode = data.roomCode;
+    // Update URL without reload
+    const newUrl = `${window.location.pathname}?room=${newRoomCode}&mode=${mode}`;
+    window.history.replaceState({}, '', newUrl);
+    
+    showWaitingRoom(data.game);
+  });
+
+  socket.on('roomJoined', (data) => {
+    console.log('[Hangman] Room rejointe:', data);
+    showWaitingRoom(data.game);
+  });
+
+  socket.on('playerJoined', (data) => {
+    console.log('[Hangman] Joueur rejoint:', data);
+    updatePlayerList(data.players);
+    showMessage(`${data.player} a rejoint la partie`);
+  });
+
+  socket.on('playerLeft', (data) => {
+    console.log('[Hangman] Joueur parti:', data);
+    updatePlayerList(data.players);
+    showMessage(`${data.player} a quitté la partie`);
+    if (data.currentTurn) {
+      document.getElementById('turn-display').textContent = `Tour de: ${data.currentTurn}`;
+    }
+  });
+
+  socket.on('playerReady', (data) => {
+    console.log('[Hangman] Joueur prêt:', data);
+    updatePlayerList(data.players);
   });
 
   socket.on('gameStarted', (data) => {
@@ -249,6 +288,82 @@ async function loadGameState() {
       window.location.href = './index.html';
     }, 2000);
   }
+}
+
+// Handle multiplayer connection
+function handleMultiplayerConnection() {
+  const multiplayerData = sessionStorage.getItem('hangmanMultiplayer');
+  if (!multiplayerData) {
+    showError('Données multijoueur manquantes');
+    return;
+  }
+
+  const data = JSON.parse(multiplayerData);
+  sessionStorage.removeItem('hangmanMultiplayer');
+
+  const username = data.username || 'Joueur';
+
+  if (mode === 'multiplayer' && urlParams.get('create') === 'true') {
+    // Create a new multiplayer room
+    socket.emit('createRoom', { 
+      username, 
+      mode: 'multiplayer',
+      isPublic: false,
+      maxPlayers: 4
+    });
+  } else if (mode === 'openRoom') {
+    // Join or create an open room
+    socket.emit('createRoom', {
+      username,
+      mode: 'openRoom',
+      isPublic: true,
+      maxPlayers: 8
+    });
+  } else if (mode === 'duel') {
+    // Find or create a duel match
+    socket.emit('createRoom', {
+      username,
+      mode: 'duel',
+      isPublic: true,
+      maxPlayers: 2
+    });
+  } else if (roomCode) {
+    // Join existing room
+    socket.emit('joinRoom', { roomCode, username });
+  }
+}
+
+// Show waiting room
+function showWaitingRoom(game) {
+  // Hide game UI, show waiting room
+  document.getElementById('game-container').classList.add('hidden');
+  document.getElementById('waiting-room').classList.remove('hidden');
+  
+  document.getElementById('room-code-display').textContent = game.roomCode;
+  updatePlayerList(game.players);
+  
+  // Show ready button
+  const btnReady = document.getElementById('btn-ready');
+  if (btnReady) {
+    btnReady.addEventListener('click', () => {
+      socket.emit('ready', { roomCode: game.roomCode });
+      btnReady.disabled = true;
+      btnReady.textContent = 'Prêt ✓';
+    });
+  }
+}
+
+// Update player list
+function updatePlayerList(players) {
+  const playerList = document.getElementById('player-list');
+  if (!playerList) return;
+
+  playerList.innerHTML = players.map(p => `
+    <div class="player-item ${p.isReady ? 'ready' : ''}">
+      <span class="player-name">${p.username}</span>
+      ${p.isReady ? '<span class="ready-badge">✓</span>' : '<span class="waiting-badge">⏳</span>'}
+    </div>
+  `).join('');
 }
 
 // Guess letter

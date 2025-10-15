@@ -40,8 +40,30 @@
       </div>
     </header>
 
+    <!-- Waiting Room (Multiplayer) -->
+    <div id="waiting-room" class="waiting-room hidden">
+      <div class="waiting-content">
+        <h2>🎮 Salle d'attente</h2>
+        <div class="room-code-box">
+          <span class="room-code-label">Code de la room:</span>
+          <span id="room-code-display" class="room-code">------</span>
+        </div>
+        <div class="players-waiting">
+          <h3>Joueurs (en attente)</h3>
+          <div id="player-list" class="player-list">
+            <!-- Généré dynamiquement -->
+          </div>
+        </div>
+        <div class="waiting-actions">
+          <button id="btn-ready" class="btn-primary btn-large">Je suis prêt !</button>
+          <button id="btn-leave-room" class="btn-secondary">Quitter</button>
+        </div>
+        <p class="waiting-tip">Partagez ce code avec vos amis pour qu'ils rejoignent la partie !</p>
+      </div>
+    </div>
+
     <!-- Main Game Area -->
-    <main class="game-container">
+    <main id="game-container" class="game-container">
       <!-- Hangman Drawing -->
       <section class="hangman-section">
         <div id="hangman-draw" class="hangman-classic">
