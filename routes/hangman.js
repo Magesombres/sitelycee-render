@@ -119,6 +119,9 @@ const startGameSchema = z.object({
 });
 
 router.post('/game/start', authMiddleware, validate(startGameSchema), async (req, res, next) => {
+  console.log('[DEBUG ROUTE] POST /hangman/game/start appelée !');
+  console.log('[DEBUG ROUTE] req.body:', JSON.stringify(req.body));
+  console.log('[DEBUG ROUTE] req.user:', req.user ? req.user._id : 'NON AUTHENTIFIÉ');
   try {
     const { mode, difficulty = 'moyen', category } = req.body;
     

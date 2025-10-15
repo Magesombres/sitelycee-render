@@ -68,6 +68,14 @@ app.use(apiLimiter);
 // Healthcheck simple
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+// Debug middleware to log all POST requests
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    console.log(`[DEBUG MIDDLEWARE] POST request to: ${req.url}`);
+  }
+  next();
+});
+
 // Import des routes
 app.use('/auth', require('./routes/auth'));
 app.use('/schedule', require('./routes/schedule'));
@@ -87,6 +95,7 @@ hangmanRouter.stack.forEach((r, i) => {
   console.log(`[DEBUG]   ${i+1}. ${method} /hangman${path}`);
 });
 app.use('/hangman', hangmanRouter);
+console.log('[DEBUG] Router Hangman monté sur /hangman');
 // Static approved uploads only
 app.use('/uploads/approved', express.static(path.join(__dirname, 'uploads', 'approved')));
 // Media API
