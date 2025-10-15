@@ -198,7 +198,11 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
       timeLimit: game.timeLimit
     });
     
-  } catch (e) { next(e); }
+  } catch (e) {
+    console.log('[DEBUG ROUTE ERROR] Erreur dans POST /game/start:', e.message);
+    console.log('[DEBUG ROUTE ERROR] Stack:', e.stack);
+    next(e);
+  }
 });
 
 // POST /hangman/game/guess - Proposer une lettre
