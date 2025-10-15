@@ -125,6 +125,11 @@ const debugUser = (req, res, next) => {
 };
 
 router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema), async (req, res, next) => {
+  // Log IMMEDIATELY at function entry - before ANY other code
+  const userAtEntry = req.user;
+  console.log('[DEBUG ROUTE ENTRY] req.user at function entry:', userAtEntry ? JSON.stringify(userAtEntry) : 'UNDEFINED');
+  console.log('[DEBUG ROUTE ENTRY] req object keys:', Object.keys(req).join(', '));
+  
   console.log('[DEBUG ROUTE] POST /hangman/game/start appelée !');
   console.log('[DEBUG ROUTE] req.body:', JSON.stringify(req.body));
   console.log('[DEBUG ROUTE] req.user:', req.user ? req.user._id : 'NON AUTHENTIFIÉ');
