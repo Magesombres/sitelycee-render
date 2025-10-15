@@ -207,6 +207,9 @@ async function startSoloGame(mode) {
 
     const game = await response.json();
     
+    // Store game data in sessionStorage for game.html to use
+    sessionStorage.setItem('hangmanGameData', JSON.stringify(game));
+    
     // Redirect to game page with room code
     window.location.href = `./game.html?room=${game.roomCode}&mode=${mode}`;
   } catch (err) {

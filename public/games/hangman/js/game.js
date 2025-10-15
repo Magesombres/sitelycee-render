@@ -215,14 +215,39 @@ function connectSocket() {
 
 // Load game state (solo modes)
 async function loadGameState() {
-  // For solo modes, we already created the game via API
-  // Just need to start displaying
+  // For solo modes, load the game data from sessionStorage
   try {
-    // We don't have a direct "get game" endpoint, so we guess the first letter to get state
-    // Or we display empty state and wait for first interaction
+    const gameDataStr = sessionStorage.getItem('hangmanGameData');
+    if (!gameDataStr) {
+      throw new Error('Données de partie manquantes');
+    }
+    
+    const gameData = JSON.parse(gameDataStr);
+    sessionStorage.removeItem('hangmanGameData'); // Clean up
+    
+    // Initialize game state with data from API
+    gameState.word = '_'.repeat(gameData.wordLength);
+    gameState.revealedWord = '_'.repeat(gameData.wordLength);
+    gameState.category = gameData.category;
+    gameState.hint = gameData.hint;
+    gameState.livesRemaining = gameData.lives;
+    gameState.timeLimit = gameData.timeLimit;
+    gameState.startTime = Date.now();
+    gameState.mode = mode;
+    
     updateUI();
+    
+    // Start timer for chrono mode
+    if (gameData.timeLimit) {
+      startTimer(gameData.timeLimit);
+    }
+    
   } catch (err) {
     console.error('Erreur chargement:', err);
+    showError('Impossible de charger la partie');
+    setTimeout(() => {
+      window.location.href = './index.html';
+    }, 2000);
   }
 }
 
@@ -260,7 +285,21 @@ async function guessLetter(letter) {
       updateKeyboard(letter, data.correct);
       updateUI();
       
-      if (data.gameOver) {
+      // Mode Survival: nouveau mot
+      if (data.newWord && !data.gameOver) {
+        showMessage(`Mot trouvé ! Mots complétés : ${data.wordsCompleted}`);
+        setTimeout(() => {
+          // Réinitialiser pour le nouveau mot
+          gameState.word = '_'.repeat(data.newWord.wordLength);
+          gameState.revealedWord = '_'.repeat(data.newWord.wordLength);
+          gameState.category = data.newWord.category;
+          gameState.hint = data.newWord.hint;
+          gameState.guessedLetters = [];
+          gameState.wrongGuesses = [];
+          resetKeyboard();
+          updateUI();
+        }, 2000);
+      } else if (data.gameOver) {
         handleGameOver(data.won, data.word);
       }
       
@@ -295,8 +334,10 @@ function resetKeyboard() {
 
 // Update UI
 function updateUI() {
-  // Lives
-  const hearts = '❤️'.repeat(gameState.livesRemaining) + '🖤'.repeat(6 - gameState.livesRemaining);
+  // Lives (prevent negative values)
+  const livesLeft = Math.max(0, gameState.livesRemaining);
+  const maxLives = gameState.mode === 'survival' ? 1 : 6;
+  const hearts = '❤️'.repeat(livesLeft) + '🖤'.repeat(Math.max(0, maxLives - livesLeft));
   document.getElementById('lives-display').innerHTML = hearts;
   
   // Word
@@ -547,4 +588,10 @@ function playSound(type) {
 function showError(message) {
   // TODO: Better error display
   console.error(message);
+}
+
+function showMessage(message) {
+  // TODO: Better message display
+  console.log('[INFO]', message);
+  // Could create a toast notification here
 }

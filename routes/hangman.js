@@ -259,15 +259,49 @@ router.post('/game/guess', authMiddleware, validate(guessSchema), async (req, re
     
     let gameOver = false;
     let won = false;
+    let newWord = null;
     
     if (allLettersFound) {
       won = true;
-      gameOver = game.mode !== 'survival'; // En survie, on continue avec un nouveau mot
       
       if (game.mode === 'survival') {
+        // En survie, charger un nouveau mot
         game.wordsCompleted += 1;
+        
         // Charger un nouveau mot
-        // (simplifié ici, devrait être géré par Socket.IO pour le temps réel)
+        const difficulty = game.difficulty || 'moyen';
+        const count = await HangmanWord.countDocuments({ difficulty });
+        if (count > 0) {
+          const random = Math.floor(Math.random() * count);
+          const word = await HangmanWord.findOne({ difficulty }).skip(random);
+          
+          // Réinitialiser pour le nouveau mot
+          game.currentWord = {
+            wordId: word._id,
+            word: word.word,
+            hint: word.hint,
+            category: word.category
+          };
+          game.guessedLetters = [];
+          game.wrongGuesses = [];
+          game.livesRemaining = 1; // En survival, on garde 1 seule vie par mot
+          
+          word.usageCount += 1;
+          await word.save();
+          
+          newWord = {
+            wordLength: word.word.length,
+            category: word.category,
+            hint: word.hint
+          };
+        } else {
+          // Plus de mots disponibles, fin de partie
+          gameOver = true;
+          won = true;
+        }
+      } else {
+        // Autres modes : fin de partie
+        gameOver = true;
       }
     } else if (game.livesRemaining <= 0 || (game.mode === 'survival' && game.survivalLives <= 0)) {
       gameOver = true;
@@ -305,7 +339,9 @@ router.post('/game/guess', authMiddleware, validate(guessSchema), async (req, re
       livesRemaining: game.livesRemaining,
       gameOver,
       won,
-      word: gameOver ? game.currentWord.word : undefined
+      word: gameOver ? game.currentWord.word : undefined,
+      newWord: newWord, // Pour le mode survival
+      wordsCompleted: game.wordsCompleted
     });
     
     // Broadcast via Socket.IO si multiplayer
