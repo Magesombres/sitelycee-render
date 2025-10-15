@@ -140,27 +140,34 @@ router.post('/game/start', authMiddleware, debugUser, validate(startGameSchema),
     console.log('[DEBUG ROUTE] Destructured body:', { mode, difficulty, category });
     
     // Générer un code de room unique
+    console.log('[DEBUG ROUTE] Generating room code...');
     const genCode = () => {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
     };
     
     let roomCode = genCode();
+    console.log('[DEBUG ROUTE] Generated roomCode:', roomCode);
     while (await HangmanGame.findOne({ roomCode })) {
       roomCode = genCode();
     }
+    console.log('[DEBUG ROUTE] Room code is unique:', roomCode);
     
     // Trouver un mot aléatoire selon les critères
     const query = { difficulty };
     if (category) query.category = category;
+    console.log('[DEBUG ROUTE] Word query:', query);
     
     const count = await HangmanWord.countDocuments(query);
+    console.log('[DEBUG ROUTE] Words found:', count);
     if (count === 0) {
       return res.status(404).json({ error: 'Aucun mot trouvé pour ces critères' });
     }
     
     const random = Math.floor(Math.random() * count);
+    console.log('[DEBUG ROUTE] Random skip:', random);
     const word = await HangmanWord.findOne(query).skip(random);
+    console.log('[DEBUG ROUTE] Word selected:', word ? word.word : 'NULL');
     
     // Incrémenter le compteur d'utilisation
     word.usageCount += 1;
