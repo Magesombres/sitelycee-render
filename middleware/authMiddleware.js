@@ -1,21 +1,29 @@
 const jwt = require('jsonwebtoken');
 
 function authMiddleware(req, res, next) {
+  console.log('[DEBUG AUTH] authMiddleware appelé pour', req.method, req.url);
   try {
     const h = req.headers.authorization || '';
+    console.log('[DEBUG AUTH] Authorization header:', h ? `Bearer ${h.substring(7, 20)}...` : 'ABSENT');
     const [, token] = h.split(' ');
-    if (!token) return res.status(401).json({ error: 'Token manquant' });
+    if (!token) {
+      console.log('[DEBUG AUTH] Token manquant, retour 401');
+      return res.status(401).json({ error: 'Token manquant' });
+    }
 
     const secret = process.env.JWT_SECRET || 'dev_secret_change_me';
     const payload = jwt.verify(token, secret);
+    console.log('[DEBUG AUTH] Token vérifié, payload.id:', payload.id);
     req.user = {
       id: payload.id,
       username: payload.username,
       role: payload.role,
       managerClubs: payload.managerClubs || [],
     };
+    console.log('[DEBUG AUTH] req.user défini:', JSON.stringify(req.user));
     next();
-  } catch {
+  } catch (err) {
+    console.log('[DEBUG AUTH] Erreur JWT:', err.message);
     return res.status(401).json({ error: 'Token invalide' });
   }
 }
