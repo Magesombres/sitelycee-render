@@ -1,0 +1,347 @@
+/* 
+ * Responsive Overrides for Site Lycée
+ * Améliore la responsivité sur mobile/tablette
+ */
+
+/* ===== EVENTS CALENDAR - MOBILE ===== */
+@media (max-width: 1024px) {
+  /* Switch to list view on tablets */
+  .events-grid {
+    display: block !important;
+    min-width: auto !important;
+  }
+
+  .events-grid-scroll {
+    max-height: none !important;
+  }
+
+  .events-hours-col {
+    display: none !important;
+  }
+
+  .events-day-col {
+    margin-bottom: 1rem;
+    height: auto !important;
+    min-height: 200px;
+  }
+
+  .events-day-content {
+    height: auto !important;
+    background: none !important;
+    position: static !important;
+  }
+
+  .events-slot {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    left: 0 !important;
+    margin-bottom: 0.5rem;
+    transform: none !important;
+  }
+
+  .events-slot:hover,
+  .events-slot:focus-within {
+    transform: none !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Month view adjustments */
+  .events-month-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+    min-width: auto !important;
+  }
+
+  .events-month-weekdays {
+    display: none !important;
+  }
+
+  .events-month-cell {
+    min-height: auto !important;
+  }
+
+  /* Day view - single column */
+  .events-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ===== CHAT MESSAGES - MOBILE ===== */
+@media (max-width: 768px) {
+  /* Chat containers */
+  [class*="chat-container"],
+  [class*="chat-panel"],
+  [class*="messages-panel"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    z-index: 9999 !important;
+  }
+
+  /* Chat messages list */
+  [class*="chat-messages"],
+  [class*="messages-list"] {
+    max-height: calc(100vh - 140px) !important;
+    padding: 1rem !important;
+  }
+
+  /* Chat input */
+  [class*="chat-input"],
+  [class*="message-input"] {
+    padding: 1rem !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: var(--panel, #fff) !important;
+    border-top: 2px solid var(--line, #e5e7eb) !important;
+  }
+
+  /* Individual messages */
+  [class*="chat-message"],
+  [class*="message-item"] {
+    max-width: 85% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+}
+
+/* ===== PANELS & MODALS - MOBILE ===== */
+@media (max-width: 768px) {
+  /* Side panels become full screen */
+  [class*="side-panel"],
+  [class*="sidebar"],
+  [class*="drawer"] {
+    width: 100% !important;
+    max-width: none !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  /* Modals full screen */
+  [class*="modal-content"]:not([class*="modal-content large"]) {
+    width: 95% !important;
+    max-width: none !important;
+    margin: 1rem auto !important;
+    max-height: calc(100vh - 2rem) !important;
+    overflow-y: auto !important;
+  }
+
+  /* Large modals completely full screen */
+  [class*="modal-content large"],
+  [class*="modal-content"].large {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* ===== FLOATING ACTION BUTTONS ===== */
+@media (max-width: 768px) {
+  /* Chat button */
+  .btn-chat-float,
+  [id*="btn-chat"].floating {
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 50% !important;
+    font-size: 1.8rem !important;
+    z-index: 998 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+  }
+
+  /* Add notification badge support */
+  .btn-chat-float::after,
+  [id*="btn-chat"].floating::after {
+    content: attr(data-count);
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid var(--bg, #fff);
+  }
+
+  .btn-chat-float[data-count="0"]::after,
+  [id*="btn-chat"].floating[data-count="0"]::after {
+    display: none;
+  }
+}
+
+/* ===== GRIDS & CARDS - RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  /* 3-column grids to 2 columns */
+  [class*="grid"][style*="grid-template-columns"] {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* All grids to single column */
+  [class*="grid"],
+  [class*="-grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Cards full width */
+  [class*="card"],
+  [class*="-card"] {
+    width: 100% !important;
+    margin: 0 0 1rem 0 !important;
+  }
+}
+
+/* ===== CLUB & EVENT CARDS - ACCORDIONS ON MOBILE ===== */
+@media (max-width: 768px) {
+  /* Event cards as accordions */
+  .event-card,
+  .club-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .event-card-details,
+  .club-card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .event-card.expanded .event-card-details,
+  .club-card.expanded .club-card-details {
+    max-height: 500px;
+  }
+
+  /* Add expand indicator */
+  .event-card-header::after,
+  .club-card-header::after {
+    content: "▼";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+  }
+
+  .event-card.expanded .event-card-header::after,
+  .club-card.expanded .club-card-header::after {
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+/* ===== TABLES - MOBILE ===== */
+@media (max-width: 768px) {
+  /* Stack table rows */
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody,
+  tr {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem !important;
+    border-bottom: 1px solid var(--line, #e5e7eb);
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+}
+
+/* ===== NAVIGATION - MOBILE ===== */
+@media (max-width: 768px) {
+  /* Hide text labels, show only icons */
+  .nav-btn span:not(.icon),
+  .nav-link span:not(.icon) {
+    display: none;
+  }
+
+  /* Burger menu for mobile */
+  .nav-links {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+}
+
+/* ===== SMOOTH TRANSITIONS ===== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  /* Touch devices - larger touch targets */
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

@@ -548,26 +548,180 @@ body {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .lobby-container {
-    padding: 1rem;
-  }
-
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
   .modes-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .modal-content {
+    width: 90%;
+    max-width: 600px;
+  }
+
+  .modal-content.large {
+    width: 95%;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .lobby-container {
+    padding: 1rem;
+  }
+
+  .navbar {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.5rem;
+  }
+
+  .modes-section h2,
+  .quick-stats h2,
+  .mini-leaderboard h2 {
+    font-size: 1.5rem;
+  }
+
+  .modes-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .mode-card {
+    padding: 1.5rem;
+  }
+
+  .mode-icon {
+    font-size: 2.5rem;
+  }
+
+  .mode-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .mode-buttons {
+    flex-direction: column;
+  }
+
+  .btn-play,
+  .btn-join {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
   .nav-links {
     flex-wrap: wrap;
     gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
   }
 
   .nav-btn {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  /* Modals full screen on mobile */
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-content.large {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  /* Leaderboard */
+  .leaderboard-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tab-btn {
+    width: 100%;
+  }
+
+  .leaderboard-item {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  /* Settings */
+  .settings-section {
+    padding: 1rem;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .setting-item select,
+  .setting-item input {
+    width: 100%;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.5rem;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.2rem;
+  }
+
+  .nav-btn {
+    font-size: 0.75rem;
     padding: 0.4rem 0.8rem;
+    min-width: 80px;
+  }
+
+  .mode-card {
+    padding: 1rem;
+  }
+
+  .mode-icon {
+    font-size: 2rem;
+  }
+
+  .btn-play,
+  .btn-join {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
   }
 }
